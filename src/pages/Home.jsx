@@ -26,13 +26,15 @@ const Home = ({ navigate, notifications }) => {
       </div>
 
       {}
-      <div className="flex-1 bg-gray-50 p-6 rounded-lg shadow-inner flex flex-col">
+      <div className="flex-1 bg-blue-200 text-gray-900 p-6 rounded-lg shadow-lg flex flex-col">
+
         <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-3">Latest Notifications</h2>
 
         {notifications.length === 0 ? (
           <p className="text-gray-600">No new updates at the moment. Please check back later!</p>
         ) : (
-          <div className="space-y-6">
+          <div className="space-y-6 overflow-y-auto max-h-[400px] pr-2 animate-scroll">
+
             {}
             {jobAlerts.length > 0 && (
               <div>
