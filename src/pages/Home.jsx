@@ -33,7 +33,8 @@ const Home = ({ navigate, notifications }) => {
         {notifications.length === 0 ? (
           <p className="text-gray-600">No new updates at the moment. Please check back later!</p>
         ) : (
-          <div className="space-y-6 overflow-y-auto max-h-[400px] pr-2 animate-scroll">
+          <div className="space-y-6 overflow-hidden max-h-[400px] pr-2">
+          <div className="space-y-6 animate-scroll-medium">
 
             {}
             {jobAlerts.length > 0 && (
@@ -88,9 +89,11 @@ const Home = ({ navigate, notifications }) => {
               </div>
             )}
           </div>
+          </div>
         )}
       </div>
     </div>
+    
   );
 };
 
