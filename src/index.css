@@ -2,3 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+
+.react-calendar__tile.holiday-gazetted {
+  background: #fecaca !important;
+}
+
+
+.react-calendar__tile.holiday-special {
+  background: #bfdbfe !important;
+}
+
+
+.react-calendar__tile.holiday-weekend {
+  background:  #a7f3d0 !important;
+}

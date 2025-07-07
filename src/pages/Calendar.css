@@ -1,0 +1,16 @@
+.react-calendar {
+  width: 85% !important;
+  max-width: 85% !important;
+  font-family: inherit;
+}
+
+.react-calendar__tile {
+  height: auto;
+  min-height: 80px;
+  display: flex;
+  font-size: 1.1rem;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 6px;
+  box-sizing: border-box;
+}

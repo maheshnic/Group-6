@@ -28,9 +28,24 @@ const Register = ({ navigate, onLoginSuccess }) => {
   const [category, setCategory] = useState('');
   const [username, setUsername] = useState('');
 
-  useEffect(() => {
+ const [timer, setTimer] = useState(45);
+
+useEffect(() => {
+  generateCaptcha();
+  const regenInterval = setInterval(() => {
     generateCaptcha();
-  }, []);
+    setTimer(45);
+  }, 45000);
+
+  const countdown = setInterval(() => {
+    setTimer((prev) => (prev > 0 ? prev - 1 : 0));
+  }, 1000);
+
+  return () => {
+    clearInterval(regenInterval);
+    clearInterval(countdown);
+  };
+}, []);
 
   const generateCaptcha = () => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -45,6 +60,10 @@ const Register = ({ navigate, onLoginSuccess }) => {
     e.preventDefault();
     setError('');
     setMessage('');
+
+
+
+
 
     if (!firstName || !lastName || !gender || !age || !email || !mobile || !password || !confirmPassword) {
       setError('Please fill in all mandatory fields.');
@@ -76,6 +95,12 @@ const Register = ({ navigate, onLoginSuccess }) => {
       return;
     }
 
+
+    
+
+
+
+
     if (role === 'Candidate') {
       if (!username || !dob || !aadhaar || !category || !title) {
         setError('Please fill in all Candidate-specific mandatory fields.');
@@ -98,6 +123,12 @@ const Register = ({ navigate, onLoginSuccess }) => {
       username, dob, aadhaar, category, title, isTripuraResident,
       prtcNumber, prtcDistrict, prtcDate, prtcFile
     });
+
+    
+    
+
+
+
 
     if (role === 'Admin') {
       onLoginSuccess({ role: 'Admin', name: `${firstName} ${lastName}`, email });
@@ -132,8 +163,8 @@ const Register = ({ navigate, onLoginSuccess }) => {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-xl">
-      <h3 className="text-2xl font-bold text-center text-gray-800 mb-6">New User Registration</h3>
+    <div className="w-full max-w-5xl mx-auto bg-white px-4 md:px-8 py-8 rounded-lg shadow-xl">
+  <h3 className="text-2xl font-bold text-center text-gray-800 mb-6">New User Registration</h3>
 
       {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
       {message && <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">{message}</div>}
@@ -142,12 +173,14 @@ const Register = ({ navigate, onLoginSuccess }) => {
         <div>
           <label className="block text-gray-700 font-semibold mb-2">First Name</label>
           <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)}
+          placeholder="Enter your First Name here"
             className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
         </div>
 
         <div>
           <label className="block text-gray-700 font-semibold mb-2">Last Name</label>
           <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)}
+          placeholder="Enter your Last Name here"
             className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
         </div>
 
@@ -162,31 +195,35 @@ const Register = ({ navigate, onLoginSuccess }) => {
 
         <div>
           <label className="block text-gray-700 font-semibold mb-2">Age</label>
-          <input type="number" min="18" max="120" value={age} onChange={(e) => setAge(e.target.value)}
+          <input type="number" min="18" max="100" value={age} onChange={(e) => setAge(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
         </div>
 
         <div>
           <label className="block text-gray-700 font-semibold mb-2">Mobile Number</label>
           <input type="text" value={mobile} onChange={(e) => setMobile(e.target.value)}
+           placeholder="Enter your 10-digit mobile number"
             className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
         </div>
 
         <div className="md:col-span-2">
           <label className="block text-gray-700 font-semibold mb-2">Email</label>
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+          placeholder="Enter your valid email-id here"
             className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
         </div>
 
         <div>
           <label className="block text-gray-700 font-semibold mb-2">Password</label>
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+          placeholder="Enter your password here"
             className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
         </div>
 
         <div>
           <label className="block text-gray-700 font-semibold mb-2">Confirm Password</label>
           <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
+          placeholder="Enter the same password here"
             className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
         </div>
 
@@ -213,6 +250,7 @@ const Register = ({ navigate, onLoginSuccess }) => {
             <div>
               <label className="block text-gray-700 font-semibold mb-2">Username</label>
               <input type="text" value={username} onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter a valid Username"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
             </div>
 
@@ -233,6 +271,7 @@ const Register = ({ navigate, onLoginSuccess }) => {
             <div>
               <label className="block text-gray-700 font-semibold mb-2">Aadhaar Number</label>
               <input type="password" value={aadhaar} onChange={(e) => setAadhaar(e.target.value)}
+              placeholder="Enter your 12-digit valid Adhaar number"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md" required />
             </div>
 
@@ -259,6 +298,7 @@ const Register = ({ navigate, onLoginSuccess }) => {
                 <div>
                   <label className="block text-gray-700 font-semibold mb-2">PRTC Number</label>
                   <input type="text" value={prtcNumber} onChange={(e) => setPrtcNumber(e.target.value)}
+                   placeholder="Enter your PRTC number"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md" />
                 </div>
                 <div>
@@ -292,14 +332,22 @@ const Register = ({ navigate, onLoginSuccess }) => {
         )}
 
         <div className="md:col-span-2">
-          <label className="block text-gray-700 font-semibold mb-2">Captcha</label>
-          <div className="flex items-center gap-4">
-            <span className="bg-gray-200 px-4 py-2 font-mono tracking-widest rounded-md text-lg">{captcha}</span>
-            <button type="button" onClick={generateCaptcha} className="text-blue-600 hover:underline font-semibold">Refresh</button>
-          </div>
-          <input type="text" value={userCaptcha} onChange={(e) => setUserCaptcha(e.target.value)}
-            className="w-full mt-2 px-3 py-2 border border-gray-300 rounded-md" placeholder="Enter Captcha" required />
-        </div>
+  <label className="block text-gray-700 font-semibold mb-2">Captcha</label>
+  <div className="flex items-center gap-4">
+    <span className="bg-gray-200 px-4 py-2 font-mono tracking-widest rounded-md text-lg">
+      {captcha}
+    </span>
+    <span className="text-sm text-gray-500">Refreshing in {timer}s</span>
+  </div>
+  <input
+    type="text"
+    value={userCaptcha}
+    onChange={(e) => setUserCaptcha(e.target.value)}
+    className="w-full mt-2 px-3 py-2 border border-gray-300 rounded-md"
+    placeholder="Enter Captcha"
+    required
+  />
+</div>
 
         <div className="md:col-span-2 mt-4">
           <button type="submit"

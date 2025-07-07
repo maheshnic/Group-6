@@ -40,3 +40,23 @@
 .read-the-docs {
   color: #888;
 }
+
+.react-calendar {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: block;
+}
+
+.react-calendar__month-view__weekdays,
+.react-calendar__month-view__days {
+  display: grid !important;
+  grid-template-columns: repeat(7, 1fr) !important;
+}
+
+.react-calendar__tile {
+  flex: 1 0 auto;
+  text-align: center;
+  padding: 1rem 0.5rem !important;
+  box-sizing: border-box;
+}
+

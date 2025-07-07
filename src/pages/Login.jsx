@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 
 const generateCaptcha = () => {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; 
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let result = '';
   for (let i = 0; i < 5; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -11,33 +12,61 @@ const generateCaptcha = () => {
 
 const Login = ({ navigate, onLoginSuccess }) => {
   const [loginType, setLoginType] = useState('Candidate');
-  const [email, setEmail] = useState('');
+  const [loginMethod, setLoginMethod] = useState('Email');
+  const [emailOrMobile, setEmailOrMobile] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [captcha, setCaptcha] = useState(generateCaptcha());
   const [userCaptcha, setUserCaptcha] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const [timer, setTimer] = useState(45);
 
   useEffect(() => {
-    setCaptcha(generateCaptcha()); 
-  }, [loginType]);
+    const captchaInterval = setInterval(() => {
+      setCaptcha(generateCaptcha());
+      setTimer(45);
+    }, 45000);
+    return () => clearInterval(captchaInterval);
+  }, []);
+
+  useEffect(() => {
+    const countdown = setInterval(() => {
+      setTimer(prev => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(countdown);
+  }, []);
 
   const handleLogin = (e) => {
     e.preventDefault();
     setError('');
     setMessage('');
 
-    if (!email || !password || !userCaptcha) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const mobileRegex = /^[6-9]\d{9}$/;
+
+    if (!emailOrMobile || !password || !userCaptcha) {
       setError('Please fill in all fields including captcha.');
+      return;
+    }
+
+    if (loginMethod === 'Email' && !emailRegex.test(emailOrMobile)) {
+      setError('Please enter a valid email address in the form of username@domain.tld');
+      return;
+    }
+
+    if (loginMethod === 'Mobile' && !mobileRegex.test(emailOrMobile)) {
+      setError('Please enter a valid 10-digit mobile number starting with 6-9.');
       return;
     }
 
     if (userCaptcha.toUpperCase() !== captcha) {
       setError('Captcha does not match. Please try again.');
-      setCaptcha(generateCaptcha()); 
+      setCaptcha(generateCaptcha());
       setUserCaptcha('');
       return;
     }
+
 
     if (loginType === 'Admin') {
       console.log("Attempting Admin login...");
@@ -56,7 +85,7 @@ const Login = ({ navigate, onLoginSuccess }) => {
   return (
     <div className="w-full max-w-lg mx-auto bg-white p-8 rounded-lg shadow-xl">
       <h3 className="text-2xl font-bold text-center text-gray-800 mb-6">Login Dashboard</h3>
-      
+
       <div className="flex border-b mb-6">
         {['Candidate', 'Admin', 'Department'].map(type => (
           <button
@@ -82,53 +111,67 @@ const Login = ({ navigate, onLoginSuccess }) => {
         )}
 
         <h4 className="text-xl font-semibold text-gray-700 mb-4 text-center">Login as a {loginType}</h4>
-        
+
         <div className="mb-4">
-          <label htmlFor="email" className="block text-gray-700 font-semibold mb-2">Email ID</label>
+          <label className="block text-gray-700 font-semibold mb-1">Login Using</label>
+          <select
+            value={loginMethod}
+            onChange={(e) => setLoginMethod(e.target.value)}
+            className="w-full border rounded px-3 py-2"
+          >
+            <option value="Email">Email</option>
+            <option value="Mobile">Mobile Number</option>
+          </select>
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="identifier" className="block text-gray-700 font-semibold mb-1">
+            {loginMethod === 'Email' ? 'Email ID' : 'Mobile Number'}
+          </label>
           <input
-            type="email"
-            id="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
+            type="text"
+            id="identifier"
+            placeholder={loginMethod === 'Email' ? 'Enter your registered email' : 'Enter your 10-digit mobile number'}
+            value={emailOrMobile}
+            onChange={(e) => setEmailOrMobile(e.target.value)}
             className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
-            aria-label="Email ID"
           />
         </div>
 
         <div className="mb-4">
-          <label htmlFor="password" className="block text-gray-700 font-semibold mb-2">Password</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-            aria-label="Password"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-700 font-semibold mb-2">Captcha</label>
-          <div className="flex items-center space-x-3">
-            <div className="px-4 py-2 text-lg font-bold bg-gray-200 rounded-md select-none tracking-widest">{captcha}</div>
+          <label htmlFor="password" className="block text-gray-700 font-semibold mb-1">Password</label>
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              id="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+              required
+            />
             <button
               type="button"
-              className="text-sm text-blue-600 hover:underline"
-              onClick={() => setCaptcha(generateCaptcha())}
+              onClick={() => setShowPassword(prev => !prev)}
+              className="absolute top-2 right-2 text-sm text-blue-500"
             >
-              Refresh
+              {showPassword ? "Hide" : "Show"}
             </button>
           </div>
         </div>
 
-        <div className="mb-6">
+        <div className="mb-4">
+          <label className="block text-gray-700 font-semibold mb-1">Captcha</label>
+          <div className="flex items-center space-x-3 mb-2">
+            <div className="px-4 py-2 text-lg font-bold bg-gray-200 rounded-md select-none tracking-widest">{captcha}</div>
+            <span className="text-sm text-gray-500">Refreshing in {timer}s</span>
+          </div>
           <input
             type="text"
-            placeholder="Enter Captcha"
+            placeholder="Enter captcha text"
             value={userCaptcha}
-            onChange={e => setUserCaptcha(e.target.value)}
+            onChange={(e) => setUserCaptcha(e.target.value)}
             className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
@@ -140,12 +183,23 @@ const Login = ({ navigate, onLoginSuccess }) => {
         >
           Login as {loginType}
         </button>
+
+        <div className="mt-2 text-center">
+  <button
+    className="text-sm text-blue-600 hover:underline"
+    onClick={() => navigate('forgot-password')}
+  >
+    Forgot Password?
+  </button>
+</div>
       </form>
 
       <div className="mt-4 text-center text-gray-600">
         <p>Don't have an account? <button onClick={() => navigate('register')} className="text-blue-600 hover:underline">Register here</button></p>
       </div>
     </div>
+      
+    
   );
 };
 
